@@ -1,9 +1,10 @@
 package net.team33.mapping;
 
+import net.team33.mapping.Type.Compound;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -14,15 +15,15 @@ public class Mapper {
 
     private static final Map<Type, Type> NORMAL = Init.newNormal();
 
-    private final Map<Type.Compound, Map<Type.Compound, BiFunction>> methods;
+    private final Map<Compound, Map<Compound, BiFunction>> methods;
 
     private Mapper(final Builder builder) {
         this.methods = builder.methods.entrySet().stream()
                 .collect(ConcurrentHashMap::new, Mapper::add, Map::putAll);
     }
 
-    private static void add(final Map<Type.Compound, Map<Type.Compound, BiFunction>> map,
-                            final Map.Entry<Type.Compound, Map<Type.Compound, BiFunction>> entry) {
+    private static void add(final Map<Compound, Map<Compound, BiFunction>> map,
+                            final Map.Entry<Compound, Map<Compound, BiFunction>> entry) {
         map.put(entry.getKey(), new ConcurrentHashMap<>(entry.getValue()));
     }
 
@@ -45,17 +46,30 @@ public class Mapper {
     public final <S, T> Function<S, T> map(final Type<S> sourceType, final Type<T> targetType) {
         final BiFunction<Mapper, S, T> method =
                 method(normal(sourceType).getCompound(), normal(targetType).getCompound());
-        return source -> method.apply(this, source);
+        return source -> (null == source) ? null : method.apply(this, source);
     }
 
     @SuppressWarnings("unchecked")
-    private <S, T> BiFunction<Mapper, S, T> method(final Type.Compound srcCompound, final Type.Compound tgtCompound) {
-        final Map<Type.Compound, BiFunction> srcMethods = Optional.ofNullable(methods.get(srcCompound))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "no methods found for " + srcCompound));
-        return Optional.ofNullable(srcMethods.get(tgtCompound))
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "no method found for " + srcCompound + " -> " + tgtCompound));
+    private <S, T> BiFunction<Mapper, S, T> method(final Compound srcCompound, final Compound tgtCompound) {
+        final Map<Compound, BiFunction> srcMethods = Optional.ofNullable(methods.get(srcCompound)).orElseGet(() -> {
+            final Map<Compound, BiFunction> result = new ConcurrentHashMap<>();
+            methods.put(srcCompound, result);
+            return result;
+        });
+        return Optional.ofNullable(srcMethods.get(tgtCompound)).orElseGet(() -> {
+            final BiFunction result = defaultMethod(srcCompound, tgtCompound);
+            srcMethods.put(tgtCompound, result);
+            return result;
+        });
+    }
+
+    private BiFunction defaultMethod(final Compound srcCompound, final Compound tgtCompound) {
+        if (String.class.equals(tgtCompound.getRawClass())) {
+            return (map, src) -> src.toString();
+        }
+        return (map, src) -> {
+            throw new IllegalArgumentException("no method specified for " + srcCompound + " -> " + tgtCompound);
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -66,17 +80,17 @@ public class Mapper {
 
     public static class Builder {
 
-        private final Map<Type.Compound, Map<Type.Compound, BiFunction>> methods = new HashMap<>(0);
+        private final Map<Compound, Map<Compound, BiFunction>> methods = new HashMap<>(0);
 
         private Builder() {
-            put(Boolean.class, String.class, (map, src) -> Objects.toString(src));
-            put(Byte.class, String.class, (map, src) -> Objects.toString(src));
-            put(Short.class, String.class, (map, src) -> Objects.toString(src));
-            put(Integer.class, String.class, (map, src) -> Objects.toString(src));
-            put(Long.class, String.class, (map, src) -> Objects.toString(src));
-            put(Float.class, String.class, (map, src) -> Objects.toString(src));
-            put(Double.class, String.class, (map, src) -> Objects.toString(src));
-            put(Character.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Boolean.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Byte.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Short.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Integer.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Long.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Float.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Double.class, String.class, (map, src) -> Objects.toString(src));
+//            put(Character.class, String.class, (map, src) -> Objects.toString(src));
             put(String.class, Boolean.class, (map, src) -> Boolean.valueOf(src));
             put(String.class, Byte.class, (map, src) -> Byte.valueOf(src));
             put(String.class, Short.class, (map, src) -> Short.valueOf(src));
@@ -111,11 +125,11 @@ public class Mapper {
             return put(normal(sourceType).getCompound(), normal(targetType).getCompound(), method);
         }
 
-        private <S, T> Builder put(final Type.Compound srcCompound,
-                                   final Type.Compound tgtCompound,
+        private <S, T> Builder put(final Compound srcCompound,
+                                   final Compound tgtCompound,
                                    final BiFunction<Mapper, S, T> method) {
             Optional.ofNullable(methods.get(srcCompound)).orElseGet(() -> {
-                final Map<Type.Compound, BiFunction> result = new HashMap<>();
+                final Map<Compound, BiFunction> result = new HashMap<>();
                 methods.put(srcCompound, result);
                 return result;
             }).put(tgtCompound, method);

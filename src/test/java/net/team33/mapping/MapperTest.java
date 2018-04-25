@@ -7,6 +7,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
@@ -71,5 +72,10 @@ public class MapperTest<S, T> {
                 expected,
                 MAPPER.map(sourceClass, targetClass).apply(source)
         );
+    }
+
+    @Test
+    public void mapNull() {
+        assertNull(MAPPER.map(sourceClass, targetClass).apply(null));
     }
 }
