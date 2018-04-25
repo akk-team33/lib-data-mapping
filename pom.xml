@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.team33.libs</groupId>
     <artifactId>team33-data-mapping</artifactId>
-    <version>7.0.1-SNAPSHOT</version>
-    <!--version>7.0.1</version-->
+    <version>8.0.1-SNAPSHOT</version>
+    <!--version>8.0.1</version-->
     <name>Team33 Data Mapping Library</name>
-    <description>Team33 library for mapped data objects</description>
+    <description>Team33 library mapping of data</description>
     <!-- TODO: scm>
         <connection>scm:svn:svn://svn.team33.net/team33-main/libs/lib-general-7/trunk</connection>
         <developerConnection>scm:svn:svn://svn.team33.net/team33-main/libs/lib-general-7/trunk</developerConnection>
@@ -80,6 +80,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
