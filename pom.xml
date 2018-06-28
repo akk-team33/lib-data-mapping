@@ -20,6 +20,13 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.team33.libs</groupId>
+            <artifactId>team33-random</artifactId>
+            <version>8.0.0</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
