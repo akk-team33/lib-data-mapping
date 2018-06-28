@@ -17,6 +17,13 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.unmodifiableMap;
 
+/**
+ * Represents a function that can provide a map of all relevant fields for a given class.
+ * The keys within the map typically result directly or indirectly from the associated field name.
+ *
+ * @see Builder#setFilter(Predicate)
+ * @see Builder#setNaming(BiFunction)
+ */
 public class FieldMapFunction implements Function<Class<?>, Map<String, Field>> {
 
     public static final FieldMapFunction DEFAULT = builder().build();
