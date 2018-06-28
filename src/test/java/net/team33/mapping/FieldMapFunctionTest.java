@@ -15,10 +15,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class FieldMappingTest {
+public class FieldMapFunctionTest {
 
-    private static final FieldMapping DEFAULT_FIELD_MAPPING = FieldMapping.DEFAULT;
-    private static final FieldMapping INSTANCE_FIELD_MAPPING = FieldMapping.builder()
+    private static final FieldMapFunction DEFAULT_FIELD_MAPPING = FieldMapFunction.DEFAULT;
+    private static final FieldMapFunction INSTANCE_FIELD_MAPPING = FieldMapFunction.builder()
             .setFilter(Fields.Filter.INSTANCE)
             .build();
 

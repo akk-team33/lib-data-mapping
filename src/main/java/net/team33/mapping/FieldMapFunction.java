@@ -17,23 +17,23 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.unmodifiableMap;
 
-public class FieldMapping implements Function<Class<?>, Map<String, Field>> {
+public class FieldMapFunction implements Function<Class<?>, Map<String, Field>> {
 
-    public static final FieldMapping DEFAULT = builder().build();
+    public static final FieldMapFunction DEFAULT = builder().build();
 
     private final Map<Class<?>, Map<String, Field>> cache = new ConcurrentHashMap<>();
     private final Function<Class<?>, Stream<Field>> streaming;
     private final Predicate<Field> filter;
     private final BiFunction<Class<?>, Field, String> naming;
 
-    private FieldMapping(final Builder builder) {
+    private FieldMapFunction(final Builder builder) {
         streaming = builder.streaming;
         filter = builder.filter;
         naming = builder.naming;
     }
 
     /**
-     * Provides {@link Builder}s for {@link FieldMapping}s.
+     * Provides {@link Builder}s for {@link FieldMapFunction}s.
      */
     public static Builder builder() {
         return new Builder();
@@ -59,7 +59,7 @@ public class FieldMapping implements Function<Class<?>, Map<String, Field>> {
     }
 
     /**
-     * Specifies a Builder for {@link FieldMapping}s.
+     * Specifies a Builder for {@link FieldMapFunction}s.
      */
     public static final class Builder {
 
@@ -76,10 +76,10 @@ public class FieldMapping implements Function<Class<?>, Map<String, Field>> {
         }
 
         /**
-         * Builds a new {@link FieldMapping}.
+         * Builds a new {@link FieldMapFunction}.
          */
-        public final FieldMapping build() {
-            return new FieldMapping(this);
+        public final FieldMapFunction build() {
+            return new FieldMapFunction(this);
         }
 
         /**
